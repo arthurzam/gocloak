@@ -2950,6 +2950,18 @@ func (g *GoCloak) GetUserBruteForceDetectionStatus(ctx context.Context, accessTo
 	return &result, nil
 }
 
+// DeleteUserBruteForceDetectionStatus clear any user login failures for the user
+func (g *GoCloak) DeleteUserBruteForceDetectionStatus(ctx context.Context, accessToken, realm, userID string) error {
+	const errMessage = "could not delete brute force detection status"
+	var result BruteForceStatus
+
+	resp, err := g.GetRequestWithBearerAuth(ctx, accessToken).
+		SetResult(&result).
+		Delete(g.getAttackDetectionURL(realm, "users", userID))
+
+	return checkForError(resp, err, errMessage)
+}
+
 // ------------------
 // Identity Providers
 // ------------------
