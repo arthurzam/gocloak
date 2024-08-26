@@ -12,8 +12,6 @@ jobs:
           go-version: 1.19
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v3.1.0
       - name: WriteGoList
         run: go list -json -m all > go.list
       - name: nancy
@@ -32,6 +30,8 @@ jobs:
           cat test.log
           docker ps
           docker logs keycloak
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v3.1.0
       - name: CodeCov
         uses: codecov/codecov-action@v1
         with:
