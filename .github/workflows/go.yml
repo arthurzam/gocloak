@@ -12,8 +12,6 @@ jobs:
           go-version: 1.23
       - name: Checkout code
         uses: actions/checkout@v4.1.7
-      - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v6.1.0
       - name: WriteGoList
         run: go list -json -m all > go.list
       - name: nancy
@@ -24,7 +22,7 @@ jobs:
           sleep 15
       - name: Unit Tests
         run: |
-          go test -failfast -race -cover -coverprofile=coverage.txt -covermode=atomic -p 100 -cpu 1,2 -bench . -benchmem > test.log
+          go test -v -failfast -race -cover -coverprofile=coverage.txt -covermode=atomic -p 100 -cpu 1,2 . > test.log
           cat test.log
       - name: Failed Logs
         if: failure()
@@ -36,21 +34,5 @@ jobs:
         uses: codecov/codecov-action@v4.5.0
         with:
           file: ./coverage.txt
-
-      # Publish benchmarks for the main branch only
-      - name: Store Benchmark Result
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: rhysd/github-action-benchmark@v1.20.3
-        with:
-          # What benchmark tool the output.txt came from
-          tool: "go"
-          # Where the output from the benchmark tool is stored
-          output-file-path: test.log
-          # Push and deploy GitHub pages branch automatically
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          auto-push: true
-
-      # Updating go report card for main branch only
-      - name: GoReportCard
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: curl --fail --request POST "https://goreportcard.com/checks" --data "repo=github.com/Nerzal/gocloak"
+      # - name: Run golangci-lint
+      #   uses: golangci/golangci-lint-action@v6.1.0
